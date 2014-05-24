@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.lps.model">
+
+    <class name="LoyaltyEvent" table="loyalty_event">
+        <id name="id" column="id">
+            <generator class="increment"/>
+        </id>
+        <version name="version" type="int"/>
+		<property name="whatHappened">
+		  <column name="what_happened" length="100" not-null="true" />
+		</property>		
+      </class>
+
+</hibernate-mapping>
