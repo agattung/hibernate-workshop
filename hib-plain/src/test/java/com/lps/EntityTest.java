@@ -1,12 +1,16 @@
 package com.lps;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.After;
-import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,7 +26,7 @@ public class EntityTest {
 	@BeforeClass
 	public static void setUpClass() {
 		try {
-			sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+			sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory(new StandardServiceRegistryBuilder().build());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected exception");			
