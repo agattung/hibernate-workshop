@@ -14,6 +14,7 @@
     
     <logger name="org.hibernate.SQL" level="DEBUG"/>
     <logger name="org.hibernate.type" level="TRACE"/>
+    <logger name="org.hibernate.type.BasicTypeRegistry" level="INFO"/>
     <logger name="org.hibernate.transaction.spi.AbstractTransactionImpl" level="DEBUG"/>
     <logger name="org.hibernate.engine.transaction.internal.jdbc.JdbcTransaction" level="DEBUG"/>
 
