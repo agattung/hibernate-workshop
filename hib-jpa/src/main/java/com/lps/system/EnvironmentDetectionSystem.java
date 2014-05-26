@@ -170,9 +170,11 @@ public class EnvironmentDetectionSystem {
 
         String profile;
 
-        if (hostname.startsWith("lpws") || hostname.startsWith("lpnb")) {
+        String loweredHostName = hostname.toLowerCase();
+        		
+        if (loweredHostName.startsWith("lpws") || loweredHostName.startsWith("lpnb")) {
         	profile="oracle";
-        } else if (hostname.startsWith("agws") || hostname.startsWith("agnb")) {
+        } else if (loweredHostName.startsWith("agws") || loweredHostName.startsWith("agnb")) {
         	profile="mysql";
         } else {
             dumpProperties();
