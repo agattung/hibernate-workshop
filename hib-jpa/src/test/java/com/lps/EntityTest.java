@@ -13,10 +13,12 @@ import javax.persistence.Persistence;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.lps.model.LoyaltyEvent;
 
+@Ignore
 public class EntityTest {
 
 	private static EntityManagerFactory emf;
