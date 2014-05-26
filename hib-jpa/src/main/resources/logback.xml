@@ -18,6 +18,9 @@
     <logger name="org.hibernate.transaction.spi.AbstractTransactionImpl" level="DEBUG"/>
     <logger name="org.hibernate.engine.transaction.internal.jdbc.JdbcTransaction" level="DEBUG"/>
 
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.beans.factory.xml" level="DEBUG"/>
+    
     <root level="WARN">
         <appender-ref ref="stdout"/>
     </root>
