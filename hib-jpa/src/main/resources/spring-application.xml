@@ -68,4 +68,8 @@
     
     <tx:annotation-driven mode="aspectj"/>
     <aop:aspectj-autoproxy/>
+    
+    <bean id="applicationContextProvider" class="com.lps.commons.spring.SpringApplicationContextProvider"></bean>
+    <jpa:repositories base-package="com.lps" entity-manager-factory-ref="entityManagerFactory" factory-class="com.lps.commons.spring.LpsRepositoryFactoryBean"/>
+
 </beans>

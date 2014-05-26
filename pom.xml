@@ -10,6 +10,7 @@
     <packaging>pom</packaging>    
     <modules>
     	<module>hib-plain</module>
+    	<module>hib-jpa</module>
     </modules>
     <properties>
         <java-version>1.6</java-version>

@@ -2,36 +2,36 @@ package com.lps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.Session;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DelegatingSmartContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lps.commons.spring.SpringApplicationContextProvider;
 import com.lps.model.LoyaltyEvent;
+import com.lps.repository.LoyaltyEventRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-application.xml"}, loader = DelegatingSmartContextLoader.class)
+@ContextConfiguration(locations = {"classpath:spring-application.xml"}, loader = TestContextLoader.class)
 public class EntityWithJavaxTransactionalTest {
 
 	public static final String NEW_HAPPENING = "Hibernate workshop continued";
 	
-	private Session createSession;
-	private Session doNotChangeSession;
-	
-	@PersistenceContext(unitName = "data")
-	private EntityManager em;
+	@Resource
+	private LoyaltyEventRepository loyaltyEventRepository;
 	
 	@BeforeClass
 	public static void setUpClass() {
@@ -39,14 +39,10 @@ public class EntityWithJavaxTransactionalTest {
 	
 	@Before
 	public void setUp() {
-		//em = emf.createEntityManager();
 	}
 
 	@After
 	public void tearDown() {
-		if (em != null) {
-			em.close();
-		}
 	}
 	
 	@Test
@@ -61,23 +57,16 @@ public class EntityWithJavaxTransactionalTest {
 	@Test
 	public void test02_updateEvent() {
 		LoyaltyEvent event = newEvent();
-		event = doNotChangeEvent(event);
-		
-		assertEquals(0, event.getVersion());
-		
-		assertEquals(0, event.getVersion());
-		
-		// hibernate session of last @Transactional was closed
-		// -> em.contains is false
-		assertFalse(em.contains(event));
-		
-		event = implicitSave(event);		
 
+		event = doNotChangeEvent(event);		
+		assertEquals(0, event.getVersion());
+				
+		event = implicitSave(event);		
+		assertTrue(event.getVersion() > 0 );
+		
 		long eventId = event.getId();
 		
-		// same as above: em.contains returns false
-		assertFalse(em.contains(event));
-		
+		EntityManager em = getEntityManagerStatic();
 		event = (LoyaltyEvent) em.find(LoyaltyEvent.class, eventId);
 		assertEquals(NEW_HAPPENING, event.getWhatHappened());
 	}
@@ -85,36 +74,35 @@ public class EntityWithJavaxTransactionalTest {
 
 	@Transactional
 	private LoyaltyEvent newEvent() {
-		createSession = em.unwrap(Session.class);
-		
 		LoyaltyEvent event = new LoyaltyEvent();
 		event.setWhatHappened("Hibernate workshop started");
 		assertEquals(0, event.getId());
 		assertEquals(0, event.getVersion());
-		
-		// save sets the id
-		em.persist(event);
-		em.flush();
+
+		LoyaltyEvent persistedEvent = loyaltyEventRepository.save(event);
+		assertNotSame(event, persistedEvent);
+		event = persistedEvent;
+		//em.flush();
 		long eventId = event.getId();
 		assertTrue(eventId > 0 );
 
+		EntityManager em = loyaltyEventRepository.getEntityManager();
+		Session session = em.unwrap(Session.class);
+		session.contains(event);
+		assertTrue(em.contains(event));
 
 		return event;
 	}
 	
 	@Transactional
 	private LoyaltyEvent doNotChangeEvent(LoyaltyEvent event) {
-		doNotChangeSession = em.unwrap(Session.class);
-		Assert.assertNotEquals(doNotChangeSession, createSession);
 		// Hibernate detects unchanged objects
 		String oldHappening = event.getWhatHappened();
 		
 		event.setWhatHappened(NEW_HAPPENING);
 		event.setWhatHappened(oldHappening);
 		
-		// plain hibernate example: em.persist
-		// here we have new session due to @Transactional
-		event = em.merge(event);
+		event = loyaltyEventRepository.save(event);
 		assertEquals(0, event.getVersion());
 
 		return event;
@@ -122,15 +110,23 @@ public class EntityWithJavaxTransactionalTest {
 
 	@Transactional
 	private LoyaltyEvent implicitSave(LoyaltyEvent event) {
-		event = em.merge(event);
+		event = loyaltyEventRepository.findOne(event.getId());
+		
+		event.setWhatHappened(NEW_HAPPENING);
 		
 		// "implicit" persistence, no additional save necessary
-		// flush increases the version number
-		event.setWhatHappened(NEW_HAPPENING);
-
-		em.flush();
-		assertTrue(event.getVersion() > 0 );
+		// flush increases the version number, happens in surrounding transaction (aspect)		
 
 		return event;
 	}
+
+    /**
+     * @return (Shared and therefore reusable accross threads) entity manager created by EntityManagerFactory bean
+     */
+    public static EntityManager getEntityManagerStatic() {
+        EntityManagerFactory entityManagerFactory = (EntityManagerFactory) SpringApplicationContextProvider.getApplicationContext().getBean("entityManagerFactory");
+        EntityManager em = SharedEntityManagerCreator.createSharedEntityManager(entityManagerFactory);
+        return em;
+    }
+	
 }

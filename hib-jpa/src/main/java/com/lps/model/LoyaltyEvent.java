@@ -14,7 +14,7 @@ public class LoyaltyEvent {
 	private long id;
 
 	@Version
-	private int version;
+	private Integer version;
 	
 	@Column(length = 100, nullable = false)
 	private String whatHappened;
@@ -31,7 +31,7 @@ public class LoyaltyEvent {
 		this.version = version;
 	}
 	public int getVersion() {
-		return version;
+		return version != null ? version.intValue() : 0;
 	}
 
 
