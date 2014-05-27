@@ -1,14 +1,10 @@
 package com.lps;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
@@ -16,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 import org.junit.After;
 import org.junit.Before;
@@ -32,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lps.commons.spring.SpringApplicationContextProvider;
 import com.lps.model.EventLocation;
 import com.lps.model.LoyaltyEvent;
-import com.lps.model.LoyaltyTransaction;
-import com.lps.model.LoyaltyTransactionType;
-import com.lps.model.VirtualCurrency;
-import com.lps.repository.LoyaltyEventRepository;
+import com.lps.services.EventService;
 import com.lps.system.EnvironmentDetectionSystem;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,7 +37,7 @@ public class EntityWithJavaxTransactionalTest {
 	public static final String NEW_HAPPENING = "Hibernate workshop continued";
 	
 	@Resource
-	private LoyaltyEventRepository loyaltyEventRepository;
+	private EventService eventService;
 	
 	@BeforeClass
 	public static void setUpClass() {
@@ -61,7 +53,7 @@ public class EntityWithJavaxTransactionalTest {
 	
 	@Test
 	public void test01_createEvent() {
-		LoyaltyEvent event = newEvent();
+		LoyaltyEvent event = eventService.createEvent();
 		
 		assertTrue(event.getId() > 0 );
 		assertEquals(0, event.getVersion());
@@ -70,7 +62,7 @@ public class EntityWithJavaxTransactionalTest {
 	
 	@Test
 	public void test02_updateEvent() {
-		LoyaltyEvent event = newEvent();
+		LoyaltyEvent event = eventService.createEvent();
 		
 		event = doNotChangeEvent(event);		
 		//TODO
@@ -100,7 +92,7 @@ public class EntityWithJavaxTransactionalTest {
 	
 	@Test
 	public void test03_CreateProxyOnYourOwn() {
-		LoyaltyEvent event = newEvent();
+		LoyaltyEvent event = eventService.createEvent();
 		createAndCheckProxyFor(event.getId());
 	}
 	
@@ -141,44 +133,6 @@ public class EntityWithJavaxTransactionalTest {
         }
 	}
 	
-	@Transactional
-	private LoyaltyEvent newEvent() {
-		LoyaltyEvent event = new LoyaltyEvent();
-		event.setWhatHappened("Hibernate workshop started");
-		
-		LoyaltyTransaction trx = new LoyaltyTransaction();
-		trx.setAmount(100);
-		trx.setCurrency(VirtualCurrency.AWARD);
-		trx.setType(LoyaltyTransactionType.CREDIT);
-		trx.setEvent(event);
-		Set<LoyaltyTransaction> transactions = new HashSet<LoyaltyTransaction>();
-		transactions.add(trx);
-		event.setTransactions(transactions);
-		
-		EventLocation location = new EventLocation();
-		location.setCity("München");
-		
-		event.setLocation(location);
-				
-		assertEquals(0, event.getId());
-		assertEquals(0, event.getVersion());
-		
-		LoyaltyEvent persistedEvent = loyaltyEventRepository.save(event);
-		assertNotSame(event, persistedEvent);
-		event = persistedEvent;
-		//em.flush();
-		long eventId = event.getId();
-		assertTrue(eventId > 0 );
-		assertFalse(event.getTransactions().isEmpty());
-		assertTrue(event.getTransactions().iterator().next().getId() > 0);
-
-		EntityManager em = loyaltyEventRepository.getEntityManager();
-		Session session = em.unwrap(Session.class);
-		session.contains(event);
-		assertTrue(em.contains(event));
-
-		return event;
-	}
 	
 	@Transactional
 	private LoyaltyEvent doNotChangeEvent(LoyaltyEvent event) {
@@ -188,7 +142,7 @@ public class EntityWithJavaxTransactionalTest {
 		event.setWhatHappened(NEW_HAPPENING);
 		event.setWhatHappened(oldHappening);
 		
-		event = loyaltyEventRepository.save(event);
+		event = eventService.saveEvent(event);
 		// TODO
 		//assertEquals(0, event.getVersion());
 
@@ -197,7 +151,7 @@ public class EntityWithJavaxTransactionalTest {
 
 	@Transactional
 	private LoyaltyEvent implicitSave(LoyaltyEvent event) {
-		event = loyaltyEventRepository.findOne(event.getId());
+		event = eventService.loadEvent(event.getId());
 		
 		event.setWhatHappened(NEW_HAPPENING);
 		
