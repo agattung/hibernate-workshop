@@ -57,7 +57,12 @@ public class LpsJpaRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         return false;
     }
 
-
+    @Override
+    public void clear() {
+        Session hibernateSession = getEntityManager().unwrap(Session.class);
+        hibernateSession.clear();
+    }
+    
     public T findOneForUpdate(ID id) {
 
         String msg = "";

@@ -20,4 +20,6 @@ public interface LpsJpaRepository<T, ID extends Serializable> extends JpaReposit
     boolean isLoaded(T instance);
 
     boolean evictFromMemory(T instance);
+    
+    void clear();
 }

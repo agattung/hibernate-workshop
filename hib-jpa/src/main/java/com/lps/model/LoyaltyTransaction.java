@@ -5,22 +5,33 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 @Entity
 public class LoyaltyTransaction {
-	
+
+	@GenericGenerator(name="tx_seq_gen", strategy = "seqhilo",
+			parameters = {
+			    @Parameter(name="max_lo", value = "1000"),
+			    @Parameter(name="sequence", value="transaction_seq")
+			}
+			)
 	@Id
-	@GeneratedValue
+	@GeneratedValue(generator="tx_seq_gen", strategy = GenerationType.SEQUENCE)
 	private long id;
 
 	@Version
 	private int version;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 5)
 	private int amount;
 
 	@Enumerated(EnumType.STRING)

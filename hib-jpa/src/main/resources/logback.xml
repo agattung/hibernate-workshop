@@ -8,18 +8,22 @@
         </encoder>
     </appender>
 
-    <logger name="com.lps" level="DEBUG"/>
-           
-    <logger name="org.hibernate" level="INFO"/>
+    <property name = "traceLevel" value="INFO"/>
+    <property name = "debugLevel" value="INFO"/>
     
-    <logger name="org.hibernate.SQL" level="DEBUG"/>
-    <logger name="org.hibernate.type" level="TRACE"/>
+    <logger name="com.lps" level="${debugLevel}"/>
+           
+    <logger name="org.hibernate" level="${debugLevel}"/>
+    
+    <logger name="org.hibernate.SQL" level="${debugLevel}"/>
+    <logger name="org.hibernate.type" level="${traceLevel}"/>
     <logger name="org.hibernate.type.BasicTypeRegistry" level="INFO"/>
-    <logger name="org.hibernate.transaction.spi.AbstractTransactionImpl" level="DEBUG"/>
-    <logger name="org.hibernate.engine.transaction.internal.jdbc.JdbcTransaction" level="DEBUG"/>
+    <logger name="org.hibernate.transaction.spi.AbstractTransactionImpl" level="${debugLevel}"/>
+    <logger name="org.hibernate.engine.transaction.internal.jdbc.JdbcTransaction" level="${debugLevel}"/>
 
+    <logger name="org.hibernate.engine.jdbc.batch.internal.BatchingBatch" level="DEBUG"/>
     <!--  log dirty properties -->
-    <logger name="org.hibernate.event.internal.DefaultFlushEntityEventListener" level="TRACE"/>
+    <logger name="org.hibernate.event.internal.DefaultFlushEntityEventListener" level="${traceLevel}"/>
     
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.springframework.beans.factory.xml" level="DEBUG"/>
