@@ -39,9 +39,7 @@ public class LoyaltyEvent {
 	
 	@Column(length = 100, nullable = false)
 	private String whatHappened;
-
 	
-	//@NotNull @OneToMany(mappedBy="event", cascade = javax.persistence.CascadeType.ALL)
 	@OneToMany(mappedBy="event", fetch = FetchType.EAGER)
 	@Cascade({CascadeType.ALL})
 	private Set<LoyaltyTransaction> transactions;
