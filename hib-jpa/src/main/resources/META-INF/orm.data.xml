@@ -4,4 +4,8 @@
 	<named-query name="event.findByWhatHappenedViaQl">
         <query>select e from LoyaltyEvent e where e.whatHappened = :whatHappened</query>
     </named-query>
+    
+	<named-native-query name="event.findByWhatHappenedViaSql" result-class="com.lps.model.LoyaltyEvent">
+        <query>SeLeCt * from loyalty_event e WhErE e.what_happened = :whatHappened</query>
+    </named-native-query>
 </entity-mappings>

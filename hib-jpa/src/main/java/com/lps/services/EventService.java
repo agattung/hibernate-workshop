@@ -1,17 +1,17 @@
 package com.lps.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,22 +67,15 @@ public class EventService {
 		EventType type = eventTypeRepository.findByName("FlightEvent");
 		event.setType(type);
 
-		assertEquals(0, event.getId());
-		assertEquals(0, event.getVersion());
 		
 		LoyaltyEvent persistedEvent = loyaltyEventRepository.save(event);
-		assertNotSame(event, persistedEvent);
 		event = persistedEvent;
 		//em.flush();
 		long eventId = event.getId();
-		assertTrue(eventId > 0 );
-		assertFalse(event.getTransactions().isEmpty());
-		assertTrue(event.getTransactions().iterator().next().getId() > 0);
 
 		EntityManager em = loyaltyEventRepository.getEntityManager();
 		Session session = em.unwrap(Session.class);
 		session.contains(event);
-		assertTrue(em.contains(event));
 
 		return event;
 	}
@@ -99,30 +92,49 @@ public class EventService {
 
 
 	public List<LoyaltyEvent> findEventByWhatHappenedViaJpql(String whatHappened) {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager em = loyaltyEventRepository.getEntityManager(); 
+		TypedQuery<LoyaltyEvent> query = em.createNamedQuery("event.findByWhatHappenedViaQl", LoyaltyEvent.class);
+		query.setParameter("whatHappened", whatHappened);
+		List<LoyaltyEvent> resultList = query.getResultList();
+		return resultList;
 	}
 
 
 	public List<LoyaltyEvent> findEventByWhatHappenedViaRawSql(String whatHappened) {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager em = loyaltyEventRepository.getEntityManager(); 
+		TypedQuery<LoyaltyEvent> query = em.createNamedQuery("event.findByWhatHappenedViaSql", LoyaltyEvent.class);
+		query.setParameter("whatHappened", whatHappened);
+		List<LoyaltyEvent> resultList = query.getResultList();
+		return resultList;
 	}
 
 	public List<LoyaltyEvent> findEventByWhatHappenedViaCriteria(String whatHappened) {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager em = loyaltyEventRepository.getEntityManager();
+	    CriteriaBuilder cb = em.getCriteriaBuilder();	    
+
+        CriteriaQuery<LoyaltyEvent> cq = cb.createQuery(LoyaltyEvent.class);
+        Root<LoyaltyEvent> root = cq.from(LoyaltyEvent.class);
+        cq.where(cb.equal(root.get("whatHappened"), whatHappened));
+        
+        List<LoyaltyEvent> resultList = em.createQuery(cq).getResultList();
+
+		return resultList;
 	}
 	
 	public List<LoyaltyEvent> findEventByWhatHappenedViaQbe(String whatHappened) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = (Session) loyaltyEventRepository.getEntityManager().getDelegate();
+		
+		LoyaltyEvent event = new LoyaltyEvent();
+		event.setWhatHappened(whatHappened);
+		
+		Example eventExample = Example.create(event);
+		org.hibernate.Criteria criteria= session.createCriteria(LoyaltyEvent.class).add(eventExample);
+		
+		return criteria.list();
 	}
 
 
-	public List<LoyaltyEvent> findEventByWhatHappenedViaSpringDataRepository(
-			String whatHappened) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<LoyaltyEvent> findEventByWhatHappenedViaSpringDataRepository(String whatHappened) {
+		return loyaltyEventRepository.findByWhatHappened(whatHappened);
 	}
 }

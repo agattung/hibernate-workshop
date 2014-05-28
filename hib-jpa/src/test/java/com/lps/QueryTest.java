@@ -22,7 +22,7 @@ import com.lps.services.EventService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-application.xml"}, loader = TestContextLoader.class)
-public class QueryTest {
+public class QueryTest extends PersistentBaseTest {
 
 	public static final String NEW_HAPPENING = "Hibernate workshop continued";
 	
@@ -86,7 +86,7 @@ public class QueryTest {
 	}
 	
 	@Test
-	public void testQbe() {
+	public void testQueryByExample() {
 		LoyaltyEvent event = eventService.createEvent();
 		String whatHappened = event.getWhatHappened();
 		
