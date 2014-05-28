@@ -8,8 +8,8 @@
         </encoder>
     </appender>
 
-    <property name = "traceLevel" value="TRACE"/>
-    <property name = "debugLevel" value="DEBUG"/>
+    <property name = "traceLevel" value="INFO"/>
+    <property name = "debugLevel" value="INFO"/>
     
     <logger name="com.lps" level="${debugLevel}"/>
            
@@ -27,6 +27,11 @@
     
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.springframework.beans.factory.xml" level="DEBUG"/>
+    
+    <logger name="org.infinispan" level="${traceLevel}"/>
+    <!--  no idea why exlicitly setting level for EntryFactoryImpl is not working?! -->
+    <logger name="org.infinispan.container.EntryFactoryImpl" value="TRACE"/>
+    
     
     <root level="WARN">
         <appender-ref ref="stdout"/>
