@@ -20,10 +20,7 @@
             <property name="hibernate.cache.use_second_level_cache" value="true" />
             <property name="hibernate.cache.use_query_cache" value="true" />
 
-            <!--property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.JndiInfinispanRegionFactory" /-->
             <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.InfinispanRegionFactory"/>
-            <!--property name="hibernate.cache.infinispan.cachemanager" value="java:CacheManager" />
-            <property name="hibernate.cache.infinispan.statistics" value="true"/-->
 
             <property name="hibernate.cache.infinispan.cfg" value="infinispan-config.xml" />
         </properties>

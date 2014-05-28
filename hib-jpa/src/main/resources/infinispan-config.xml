@@ -1,6 +1,3 @@
 <infinispan>
-    <global>
-        <globalJmxStatistics enabled="true" allowDuplicateDomains="true"/>
-    </global>
     <namedCache name="Hibernate2ndLevelCache"/>
 </infinispan>
