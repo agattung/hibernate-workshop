@@ -3,15 +3,12 @@ package com.lps;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.internal.SessionFactoryImpl;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,31 +19,22 @@ import com.lps.model.LoyaltyEvent;
 import com.lps.model.LoyaltyTransaction;
 import com.lps.model.LoyaltyTransactionType;
 import com.lps.model.VirtualCurrency;
-import com.lps.repository.LoyaltyEventRepository;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-application.xml"}, loader = TestContextLoader.class)
-public class EntityPerformanceTest {
+public class EntityPerformanceTest extends PersistentBaseTest {
 
-	public static final String NEW_HAPPENING = "Hibernate workshop continued";
-	
-	@Resource
-	private LoyaltyEventRepository loyaltyEventRepository;
-	
-	@BeforeClass
-	public static void setUpClass() {
-	}
+	public static final String NEW_HAPPENING = "Hibernate workshop continued";	
 	
 	@Before
 	public void setUp() {
+		super.setUp();
 		SessionFactoryImpl sf = (SessionFactoryImpl) loyaltyEventRepository.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
 		String batchSizeString = (String)sf.getProperties().get(Environment.STATEMENT_BATCH_SIZE);
 		Assert.assertNotNull(batchSizeString,Environment.STATEMENT_BATCH_SIZE + " must be set in jpa properties in spring-application.xml");
 	}
 
-	@After
-	public void tearDown() {
-	}
 	
 	@Test
 	public void test01_insertEvents() {

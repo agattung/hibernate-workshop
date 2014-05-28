@@ -32,24 +32,12 @@ import com.lps.system.EnvironmentDetectionSystem;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-application.xml"}, loader = TestContextLoader.class)
-public class EntityWithJavaxTransactionalTest {
+public class EntityWithJavaxTransactionalTest extends PersistentBaseTest {
 
 	public static final String NEW_HAPPENING = "Hibernate workshop continued";
 	
 	@Resource
 	private EventService eventService;
-	
-	@BeforeClass
-	public static void setUpClass() {
-	}
-	
-	@Before
-	public void setUp() {
-	}
-
-	@After
-	public void tearDown() {
-	}
 	
 	@Test
 	public void test01_createEvent() {

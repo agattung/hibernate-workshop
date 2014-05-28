@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lps.model.EventLocation;
+import com.lps.model.EventType;
 import com.lps.model.LoyaltyEvent;
 import com.lps.model.LoyaltyTransaction;
 import com.lps.model.LoyaltyTransactionType;
 import com.lps.model.VirtualCurrency;
+import com.lps.repository.EventTypeRepository;
 import com.lps.repository.LoyaltyEventRepository;
 
 @Transactional
@@ -29,6 +31,9 @@ public class EventService {
 
 	@Autowired
 	private LoyaltyEventRepository loyaltyEventRepository;
+
+	@Autowired
+	private EventTypeRepository eventTypeRepository;
 	
 
 	public LoyaltyEvent loadEvent(long id) {
@@ -58,7 +63,10 @@ public class EventService {
 		location.setCity("München");
 		
 		event.setLocation(location);
-				
+
+		EventType type = eventTypeRepository.findByName("FlightEvent");
+		event.setType(type);
+
 		assertEquals(0, event.getId());
 		assertEquals(0, event.getVersion());
 		
@@ -78,6 +86,7 @@ public class EventService {
 
 		return event;
 	}
+
 
 
 	public List<LoyaltyEvent> findEventByWhatHappenedViaHql(String whatHappened) {

@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
@@ -51,6 +52,10 @@ public class LoyaltyEvent {
 	@NotNull
 	private Date createdDate;
 	
+	@NotNull
+	@ManyToOne
+	private EventType type;
+	
 	void setId(long id) {
 		this.id = id;
 	}
@@ -89,6 +94,14 @@ public class LoyaltyEvent {
 
 	public void setLocation(EventLocation location) {
 		this.location = location;
+	}
+	
+	public EventType getType() {
+		return type;
+	}
+
+	public void setType(EventType type) {
+		this.type = type;
 	}
 
 	public Date getCreatedDate() {

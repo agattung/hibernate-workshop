@@ -16,13 +16,13 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.lps.model.EventType;
 import com.lps.model.LoyaltyEvent;
 
 @Ignore
 public class EntityTest {
 
-	private static EntityManagerFactory emf;
-	
+	private static EntityManagerFactory emf;	
 	private EntityManager em;
 	
 	@BeforeClass
@@ -114,9 +114,26 @@ public class EntityTest {
 		assertTrue(eventId > 0 );
 		tx.commit();
 
+		EventType type = requestType();
+		
 		assertTrue(event.getId() > 0 );
 		assertEquals(0, event.getVersion());
 		return event;
+	}
+	
+	private EventType requestType() {
+		EventType type = em.find(EventType.class, new Long(1));
+		if ( type != null) {
+			return type;
+		}
+		
+		type = new EventType();
+		type.setId(1);
+		type.setName("FlightEvent");
+		em.persist(type);
+		em.flush();
+		return type;		
+
 	}
 
 }

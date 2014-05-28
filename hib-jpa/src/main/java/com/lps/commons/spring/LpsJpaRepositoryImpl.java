@@ -43,14 +43,14 @@ public class LpsJpaRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     @Override
     public boolean isLoaded(T instance) {
-        Session hibernateSession = getEntityManager().unwrap(Session.class);
+        Session hibernateSession = getSession();
         return hibernateSession.contains(instance);
     }
 
     @Override
     public boolean evictFromMemory(T instance) {
         if (isLoaded(instance)) {
-            Session hibernateSession = getEntityManager().unwrap(Session.class);
+            Session hibernateSession = getSession();
             hibernateSession.evict(instance);
             return true;
         }
@@ -59,7 +59,7 @@ public class LpsJpaRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     @Override
     public void clear() {
-        Session hibernateSession = getEntityManager().unwrap(Session.class);
+        Session hibernateSession = getSession();
         hibernateSession.clear();
     }
     
@@ -88,6 +88,16 @@ public class LpsJpaRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
             throw e;
         }
     }
+
+	@Override
+	public T merge(T instance) {
+		return (T) getSession().merge(instance);
+	}
+	
+	protected Session getSession() {
+		Session hibernateSession = getEntityManager().unwrap(Session.class);
+		return hibernateSession;
+	}
 
 
 }

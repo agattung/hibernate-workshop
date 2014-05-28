@@ -37,14 +37,6 @@ public class QueryTest {
 		loggerContext.getLogger("org.hibernate.type").setLevel(Level.TRACE);
 	}
 	
-	@Before
-	public void setUp() {
-	}
-
-	@After
-	public void tearDown() {
-	}
-	
 	@Test
 	public void testHql() {
 		LoyaltyEvent event = eventService.createEvent();

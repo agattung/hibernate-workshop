@@ -8,8 +8,8 @@
         </encoder>
     </appender>
 
-    <property name = "traceLevel" value="INFO"/>
-    <property name = "debugLevel" value="INFO"/>
+    <property name = "traceLevel" value="TRACE"/>
+    <property name = "debugLevel" value="DEBUG"/>
     
     <logger name="com.lps" level="${debugLevel}"/>
            
